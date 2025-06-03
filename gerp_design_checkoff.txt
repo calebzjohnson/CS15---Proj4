@@ -1,0 +1,162 @@
+Names: Caleb Johnson and Owen Short
+utlns: cjohns34 and oshort1
+
+Answer the questions below, and submit your answers under the assignment
+"gerp Design Checkoff" on Gradescope. You must sign up for a design checkoff
+slot with a TA to discuss your provided answers (see spec for sign up link).
+Make sure to submit this file *prior* to your design checkoff.
+
+For each question, give as much detail as you feel is necessary.
+
+1. What classes and structs will you implement for your program? For each class,
+   provide a list of public functions of that class; for each struct, provide a
+   list of member variables.
+   - hash class
+      - member vars:
+         - load factor (int)
+         - array size (int)
+         - num words (int)
+      - private functions:
+         - expand hash
+         - rehash - rehashes words after expansion
+         - hash(word) - returns the bucket # of a given word
+      - public functions
+         - constructor - initializes the array and laod factor
+         - insert - adds a new word to the hash
+         - remove
+         - find
+
+   - gerp class
+      - public:
+         - run() - runs query loop
+         - constructor - makes hash map of words in the directory
+         - destructor
+      - private:
+         - member vars:
+            - file tree - pointer to root DirNode of the fileTree
+            - word hash - holds all the words in the directory
+            - line vector - vector where each element is a line object
+         - member funcs:
+            - getFilePath (string) - returns the file path from the root of the
+              tree
+            - string stripper (string)
+            - desensitizes a string - turns a string with upper case letters
+              into all lower case
+
+   - word class
+      - builds objects for each word in the directory
+      - private:
+         - struct for each object that holds:
+            - key - bucket # (int)
+            - word - the word itself (string)
+            - line pointer - points to the line that the word came from
+      - public:
+         - getters for each variable in the struct
+         - constructor with parameters that are the variables in the struct to
+           make the word objects
+         - destructor
+
+   - line class
+      - builds line objects that represent lines in every file
+      - public:
+         - getters for the member variables
+         - constructor that builds an object given the file its from, and its
+           line #
+      - private:
+         - member vars:
+            - printed (bool) - stores whether the line has been printed
+            - line # (int)
+            - filename (string) - file that the line came from
+
+   - FSTree - given
+
+   - DirNode - given
+        
+2. Describe the index that you will build for querying. What specific data
+   structures will you use to build this index? *Important*: Bring an
+   accompanying drawing of your index structure when you come to your checkoff.
+   
+   We will build a chained hash for querying. This hash will hold every word in
+   the directory in its buckets. To handle collisions, we will chain the hash so
+   it will hold a list of words with the same hash value in its buckets. For
+   these lists, we will use a std::list.
+
+3. To use your index, you will use something for lookup (the key) and you will
+   get some associated data back (the value). What are the C++ *types* of your
+   index's key and value? Examples of valid types: int, string,
+   vector<string>, vector<list<string>>; you may also define custom types using
+   structs/classes, e.g., Animal and vector<Animal> are valid types if you
+   define a struct/class named Animal. If your key/value types involve custom
+   classes/structs, they should be included in your answer to question #1.
+                
+Key type: int - the bucket # that the word is at
+Value type: word object - see above classes
+
+4. What do you expect the *space* complexity of your index will be? How many
+   times will a single line be stored according to your data structures?
+   - A line would be held for each different word within that line
+
+5. What is the time complexity of *building* your index? If you refer to some
+   variable, be sure to specify what the variable refers to, e.g., in "O(n)",
+   state explicitly what "n" is.
+   - O(n) where n is the number of words in the files of the given directory
+
+6. What is the time complexity of *using* your index for lookup? As above,
+   be specific about variables you use.
+   - O(bucket size of a word in the hash)
+      - you have to iterate through the list at each bucket to go through every
+        element in that bucket
+      - should be close to O(1) as buckets will only be around the # of times a
+        word appears in the directory
+                
+7. How will you handle case-sensitive search?
+   What is the time complexity (should be close to O(1))?
+   - Different cases of the same letters would be in different buckets (Hello 
+     and heLlo would be stored in different buckets)
+   - Time complexity would be O(#of times the word appears in the directory)
+
+
+8. How will you handle case-insensitive search?
+   What is the time complexity (should be close to O(1))?
+   - Words with different cases of the same letter would be stored in the same
+     bucket (Hello and hello)
+   - Time complexity would be O(#of times the word appears in the directory
+     ignoring case sensitivity)
+
+9. How are you handling duplicate words within a line? For example, if a line
+   contains "the cat and the dog" and a user searches "the", this line should
+   only be reported once. How will your implementaiton achieve this?
+   - we will use a line object that stores whether the line has been printed and
+     if the boolean is true, we won't print that line
+
+10. How will you test your implementation and what specific evidence of testing
+    will you submit?
+   - We will build test directories to test edge cases such as empty
+     directories, case sensitivity, etc.
+   - When building the line class, we'll use unit tests to make sure we are
+      are building objects with the correct member variables. This is how we'll
+      test our getters
+   - When building the word class, we will use unit tests again. We can use the
+     hash function in c++ to make sure that the hash value assigned to a word is
+     correct. We can test our getters by asserting that the word contains and
+     the correct member variables
+   - Once all of our classes are completed, we will diff test our program's 
+   output with the expected output (files we'll create) for the given 
+   directories. Additionally, we will create directories with edge cases that 
+   we will also diff test.
+
+
+11. What is your schedule for completing this assignment? Include specific dates
+    and the tasks that you would like to accomplish by each date. Do not forget
+
+   11/4 - finish writing line class and test
+   11/5 - finish writing word class and test
+   11/6 - begin writing gerp class
+   11/7 - continue writing gerp class with tests as we write
+   11/8 - continue writing gerp class with tests as we write
+   11/9 - finish gerp class with tests as we write
+   11/10 - tests all given directories and edges case directories for whole 
+   program
+   11/11 - submit project    testing!
+
+    
