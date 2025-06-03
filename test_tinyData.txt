@@ -1,0 +1,7 @@
+/comp/15/files/proj-gerp-test-dirs/tinyData/hello
+/comp/15/files/proj-gerp-test-dirs/tinyData/test.txt
+/comp/15/files/proj-gerp-test-dirs/tinyData/a/found
+/comp/15/files/proj-gerp-test-dirs/tinyData/a/you
+/comp/15/files/proj-gerp-test-dirs/tinyData/b/hehe.txt
+/comp/15/files/proj-gerp-test-dirs/tinyData/b/c/heyLookAtMe.txt
+/comp/15/files/proj-gerp-test-dirs/tinyData/b/c/me
