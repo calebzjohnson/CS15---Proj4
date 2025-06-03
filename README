@@ -1,0 +1,331 @@
+(A) Title, Authors' Names, Date, and Course
+Title: Project 4: gerp
+Authors: Caleb Johnson (cjohns34), Owen Short (oshort01)
+Date: 12/11
+Course: CS 15
+
+
+(B) Purpose of the Program
+The purpose of this program is to allow for clients to run the gerp program, 
+which creates an index of the directory given by the client. Furthermore, 
+clients are able to search the index for the sensitive or insensitive case of 
+a word. The lines where that word is found are then written to the client's 
+output file. Additionally, clients can create a new output file or quit and end 
+the program using the commands.
+
+
+(C) Acknowledgements for Help Received
+For this assignment, we attended office hours several times, which led us to 
+changing the arhcitecture of our Hash table slightly and helped us work out 
+other issues. For unit_tests.h, we used a similar structure to past 
+assignments. Additionally, we used a unit test from CalcYouLater to implement 
+the exit failure when the inputted directory cannot be reached.
+
+
+(D) Files and Their Purposes
+main.cpp: Driver file for the gerp program.
+gerp.cpp: Implementation of the gerp class.
+gerp.h: Interface of the gerp class.
+Hash.cpp: Implementation of the Hash class.
+Hash.h: Interface of the Hash class.
+Word.h: Interface of the Word struct.
+Line.h: Interface of the Line struct.
+DirNode.h: Given file.
+FSTree.h: Given file.
+Makefile: Compiles and links the source files to create an executable file.
+unit_tests.h: Unit tests for the phaseOne and phaseTwo functions.
+README: This file.
+test_stripped_input.txt: ensured that words properly got alphanum stripped
+      - used on test_dir directory
+test_repeat_line_input.txt: tests to make sure that lines with the same word 
+      multiple times only get printed once
+      - used on test_dir directory
+test_all_symbols_input.txt: tests to make sure when a word of all symbols gets
+      printed, it strips the command properly
+      - used on test_dir directory
+test_one_char.txt: tests to make sure we search for single char words properly
+      - used on test_dir directory
+test_dir: small directory with three files that we used to test
+      - contained test.txt, test2.txt, and test3.txt which were small files
+        used for testing so that it would be easy to traverse and add edge cases
+        directly to files
+test_largeGut.txt: tested one word on large gutenberg to make sure our program 
+      works on a large directory
+      - used on largeGutenberg directory
+test_last_word.txt: tested to make sure our program recognized the last word in
+      a line
+      - used on smallGutenberg directory
+test_file_query.txt: tests to make sure outputs are redirected to the correct 
+      outputFile. To do this, I had to sort thhe new file I was sending output 
+      to and save this to a new file before running against the reference since
+      output would be written to the same file, overwriting our programs output
+      - used on smallGutenberg directory
+test_with_q.txt: tests to make sure we get the same output when @q is in the 
+      file
+      - used on smallGutenberg directory
+test_insensitive.txt: tests to make sure @i and @insensitive work
+      - used on smallGutenberg directory
+test_quit.txt: tests to make sure the program quits with @quit
+      - used on smallGutenberg directory
+test_bulk.txt: tests on a lot of queries to ensure our program hanles large 
+      inputs
+      - used on smallGutenberg directory
+test_tinyData.txt: tests to make sure tree traversal works on the tinyData
+      directory
+test_trav_empty.txt: tests to make sure traversal works on an empty directory
+test_trav_just_files.txt: tests to make sure traversal works on a directory
+      with just files and no subdirectories
+
+
+(E) Compiling and Running the Program
+To compile and run our program, you need to use the Makefile by entering 
+"make", compiling the code and creating an executable to run. Then, you enter 
+"./gerp" to the terminal followed by the path to the directory and the output 
+file, which are all in same line. This will run the program on the directory, 
+creating an index of the directory. The program will then ask for a query.
+
+
+(F) Architectural Overview of the Program
+The overall implementation of our program takes place in the gerp class. Here 
+is where we use the other files needed to run the program.
+
+For the given files, FSTree.h and DirNode.h, we used them to create a tree of 
+the directory and sub directories. This was done by calling the FSTree 
+constructor in the gerp constructor, taking in the directory path. From this, 
+we were able to get the root of three, which is a DirNode object. Using this 
+root, we were able to traverse the entire directory, reading in lines and 
+words, while also creating a vector of strings containing the filepath for 
+every file.
+
+For the Hash table, we created the instance of it as a private member variable, 
+using the Hash class. The Hash class gives gerp the ability to insert Word 
+objects to the table and rehash the table when expanded (load factor exceeds 
+0.75). Additionally, it holds the Hash table, allowing for access to its 
+buckets and bucket indexes of given words.
+
+As stated earlier, the Word struct is what makes up each bucket in the table, 
+holding the original string from the directory (stripped down in gerp first), 
+the index of its corresponding line object in the line vector from gerp, and 
+the the word string converted to its insensitive case (done in Word 
+constructor). Word objects are created in gerp.cpp and then inserted to the 
+table using the Hash function insert.
+
+Another file we used in gerp was Line.h, which contains the Line struct. These 
+objects are used to hold every line of the given directory, which are created 
+as gerp.cpp runs through every file in the directory. Each Line object holds 
+three values, which are all used for writing to the output file when the query 
+calls for searching for a word. One is the lineString string, containing the 
+string of that specific line. The next variable is the fileNum integer, 
+corresponding to the index of the line's file in the filepath vector from gerp. 
+Last, the lineNum integer is used to hold that line's spot in the file. With 
+these three variables, gerp is able to write the proper message to the client's 
+current output file.
+
+Finally, main.cpp is used to first check that what the client inputted to 
+terminal has the correct amount of arguments (3). Then, main.cpp creates an 
+instance of the gerp class, giving the constructor the directory path. 
+Following this, it opens the given output file and sends that to the gerp run 
+function, which essentially begins the program.
+
+
+(G) Strutures and Algorithms
+This program used a variety of data structures and algorithms to implement.
+First, we used the Tree data structure to build a fileTree. This filetree
+allowed us to create filepath strings by traversing and marking the files that
+we traversed through to get to the desired file. These filepaths were used when
+writing to the outputFile when we wanted to print where a line came from.
+The tree data structure is a structure that holds information in a parent-child
+format, where parent nodes point to their child nodes. In our program, child
+nodes represented files and subdirectories within a parent directory, and the
+nodes themselves, DirNodes from the given class, gave us access to information
+about the files that they represent.
+
+One benefit of the tree data structure is that the structure itself holds
+information about the data its storing. Since it has a hierarchical structure
+(nodes have designated parents and children), we can access information about
+how pieces of data relate to each other parent-child wise. In our program
+specifically, this benefit allowed us to tell which files came from which parent
+directories. This allowed us to accurately construct our filepaths.
+One drawback of the tree structure is that it does not give quick access to the
+data within it. In order to access a desired file within our tree, for example,
+you have to traverse through all of the parent directories that lead to the file
+as opposed to getting instant access as you would with an ArrayList, for
+example.
+
+Another data structure that we utilized was the std::vector data structure,
+which functions similar to the ArrayList data structure. We utilized this
+structure when implementing our hash table that held the words from the files
+in the given directory. This will be explained further when we describe the hash
+data structure. We also used a vector to hold our Line objects and filepath
+strings. We did this because we could access either of these items as long as
+we knew their index in the vector, which was held in the object used when 
+accessing them.
+
+The vector data structure is an implementation of the List ADT. It holds
+elements in a dynamically allocated array that can grow and shrink. Vectors
+allow users to insert and remove elements, and gain access to elements using
+standard array indexing.
+
+One benefit of using a vector is that you gain instant access to an element
+within it as long as you know the index that that element is at in the vector.
+This was beneficial to our program because it allowed us to use array indexing
+to access elements rather than having to iterate through the vector like you 
+would have to do using a linked list. When searching for words, we used a simple
+for loop that iterated through the entire size of the vector and printed words
+matching the desired query, instead of having to declare and use an iterator
+like you would have to with a linked list.
+
+One drawback of using a vector is that you cannot easily concatenate them like
+you could using a linked list. With linked lists, you simply have the last
+element in the list point to the first element in the next list to concatenate,
+but with vectors this is not possible. Furthermore, insertion into a vector
+can be quite costly time-wise, especially when inserting towards the front of
+the vector. This is because each subsequent element must be moved backwards to
+make space for the inserted element. Luckily, we were able to simply add each
+element to the back of the vector so that no elements would need to be shifted
+to make space. Because we were able to do this, we thought that the simplicity
+of array indexing combined with the instant time access to any element given an
+element index would make debugging simpler.
+
+One final data structure that we used was the hash data structure. We
+implemented this structure to hold all of the words from the files as we
+traversed through them. To do this we used a vector to represent the table,
+where at each index of the outer vector, we held another vector that held the
+words at that bucket index. This looked like: vector <vector <Word>>.
+The hash data structure is an implementation of the unordered set ADT, where
+elements are held at various locations in the structure depending on keys
+assigned to them. These keys were built by the hash<string> function provided
+in the std c++ library. This function assigns an integer to a string based on 
+that specific string. These integer values are then modded by the size of the
+table to assign that string to its corresponding bucket. We held another vector
+at each bucket so that if two strings are mapped to the same bucket, they will
+be appended to a list at that bucket. We did this because any two equivalent
+strings will be mapped to the same bucket, so when searching for a word in the
+hash we can simply find that string's hash key and we will be directed to a
+vector holding all of the words from any file in the given directory that match
+the searched word. We can then simply iterate through this vector to print the
+lines that all of these words came from. To make our hash optimal, we made sure
+to rehsh all of the words in the table when 75% of the buckets filled. This
+ensured that we minimized collisions between multiple unique strings that could
+be hashed to the same bucket. We found that initializing the number of buckets
+to 20000 was optimal performance-wise on large data sets. We hashed our words
+based on the case-insensitive version of the word. This gave us access to all
+of the words in one place in case the user did an insensitive search.
+One benefit of the hash structure is that it allows O(1) access average case to
+any given element in it. This is because we simply find the hash key of the
+string we want to find and can immediately index to the vector holding that
+string without any iterations through the table. In our program, as mentioned
+previously, this was very beneficial when printing all of the lines 
+corresponding to a given searched string. From there, we simply iterated through
+that vector to print all of the words to the output file that was given.
+One drawback of the hash is that two strings can be mapped to the same bucket in
+the table, even if the strings themselves are different. This is because the
+hash has a finite size, so when modding the integer returned from the hash
+function, two different hash keys could be modded to the same bucket.
+We attempted to minimize these "collisions" by rehashing the table when too
+many buckets filled, but this rehashing process added runtime to our programm
+since each individual word had to be rehashed and modded by the new expanded
+table size. Overall though, the O(1) access to any element in the hash gave
+helped optimize our program's runtime and we found it the most efficient data
+structure to store the words in the file.
+
+One algorithm we found interesting in our program was our algorithm to handle
+the search queries for both case sensitive and insensitive words. First, we
+got a command inputted by the user. Next, we used our string stripper function
+made in phase one to strip this command of any prefix or trailing symbols into
+what the spec defined as a word. Next, we checked to make sure the user didn't
+input an empty string, because these words should not be inserted into our table
+in the first place. If they did, or they inputted a string with all symbols the
+program would print " Not Found.". Next, since our buckets were determined by
+the case-insensitive version of the word inputted, we decapitalized all of the
+letters in the command. From there, we were able to use the hash function and
+table size to get the bucket of the word the user was searching for. We used
+a helper function in hash to get the vector of words at that bucket, and
+iterated through that bucket to print all of the words corresponding to that
+search. As we iterated, we checked to make sure that if the search was
+insensitive, the insensitive word at each index of the bucket matched the search
+word. If the search was case sensitive, we checked against the case sensitive
+word at each index of the bucket. If we were able to find the word, we set a
+boolean to true. If this boolean ended up being false after running through the
+algorithm, we would print a message to the output file that indicated that the
+word could not be found.
+
+Another algorithm we wanted to discuss was our algorithm to insert words into
+the hash table. To do this, we first used the hash function provided by c++ and
+modded by the number of buckets in the array to get the index that we wanted
+to insert the word into in the table. Next, we checked to see if the bucket
+was empty. This was important because if it was, we would need to increment the
+number of buckets filled in the table and recalculate the load factor to see if
+we needed to expand the table. After this check, we pushed the word to the back
+of the vector at that bucket to insert it into the table.
+
+
+(H) Testing
+To test phase 1, we used a combination of unit tests and diff testing. In unit
+tests, we tested the string processor that strips strings of any trailing or
+leading symbols. We tested a edge cases in unit tests such as: symbols just at
+the start of a word, symbols at the end of a word, symbols in the middle of
+a word, a word with no symbols, words with just symbols, empty strings, single
+character words, and combinations of these cases. To test our FSTree traversal
+function we used diff. To do this, we temporarily added an output stream
+parameter that sent what would previously be sent to cout to a file we provided.
+We then diff tested these outputs against files we manually created that had our
+desired outputs. Edge cases we tested included: testing on an empty directory,
+testing on a directory with just files, and testing on a small directory that
+has files and subdirectories.
+
+For phase 2, we also tested using diff and unit tests. First, we made the Word
+and Line object files which we tested in just unit tests. We tested the
+constructors for these objects. For word, we made sure uppercase words properly
+made their lowercase member variables and that they worked when given words
+with symbols in them. For line, we just made sure that the member variables were
+properly assigned.
+
+Next, we used unit tests to test our Hash class. To do this, we had to create
+temporary public getter functions that are commented out now to be able to
+access information private to the class. For this reason, these tests are also
+commented out in unit tests. First, we tested our constructor to make sure it 
+properly assigned all of the member variables of the class. Next we tested
+insert. We did this by manually calculating the hash keys of elements we 
+inserted and checking to make sure that those elements were indeed hashed to the
+correct buckets. Edge cases we tested were: making sure elements of different
+case sensitivities were hashed to the same bucket, and that the hash expanded
+when it hit the load factor. To avoid habving to insert and test 15000 different
+words, we temporarily made the size of the table 10 so that it would rehash
+after 8 buckets filled. 
+
+Lastly, we tested our gerp class. To do this we used both unit tests and diff
+testing strategies. In unit tests, we tested the gerp constructor with two 
+directories. To do this, we needed to make two temporary gerp functions. One 
+was used to get the hash table and the other was used to get the line vector 
+from gerp. The first test put an empty directory in the gerp constructor, 
+meaning it would result in all buckets containing no Word objects (size 0) and 
+an empty line vector (size 0), which is what we tested for. The second test put 
+a directory containing a few files with words. We knew the line vector would 
+have to be 5 lines, which is the total amount of lines in all the files. Then, 
+we tested to make sure that every word in the files was at its proper buckets 
+by using the hash function to get the correct indexes. Additionally, we tested 
+that the bucket for “hello” had 4 Word objects, as that is how many “hellos” 
+were in the files (insensitive cases). Once we thoroughly unit tested our gerp 
+class, we diff tested our program output against the reference. To do this, we 
+passed various input files to the function using < in terminal so that it would 
+cin the inputFile as query commands. We tested many edge cases using diff, most 
+of which are mentioned in the files provided section that describes the test 
+input files that we used to test our program. Some of these edge cases 
+included: testing queries of all symbols, bulk queries, testing queries on 
+datasets of all sizes (our small test_dir->largeGutenberg), testing to make 
+sure we properly inserted the last word of each line of every file, testing on 
+one character queries, testing to make sure lines weren't printed twice if the 
+query word showed up twice in them, and making sure we couted the same amount 
+of "Query?"'s as the reference program when input files contained @q and when 
+they didn't. To ensure that all of our outputs matched the reference, we sent 
+our std::cout output to a file while running and compared this to the 
+reference's std::cout output. We also sorted our outputFiles that were written 
+to by the program and diff tested them against the reference in case our 
+program printed lines in a different order. By testing both our std::cout 
+output and ofstream output against the reference's, we thoroughly tested our 
+program.
+
+
+(I) Time Spent
+We spent about 30 hours on this assignment.
